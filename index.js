@@ -25,7 +25,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        client.connect();
 
 
         const userCollection = client.db('CollegeBooking').collection('Users')
@@ -72,6 +72,21 @@ async function run() {
             const result = await collegesCollection.find().toArray()
             res.send(result)
         })
+
+        // search by name
+        app.get("/AllCollege/:text", async (req, res) => {
+            const text = req.params.text;
+            const result = await collegesCollection
+                .find({
+                    $or: [
+                        { name: { $regex: text, $options: "i" } },
+                        { subCategory: { $regex: text, $options: "i" } },
+                    ],
+                })
+                .toArray();
+            res.send(result);
+        });
+
 
         app.get('/details/:id', async (req, res) => {
             const id = req.params.id;
