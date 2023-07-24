@@ -33,6 +33,13 @@ async function run() {
         const admissionsCollection = client.db('CollegeBooking').collection('admissions')
 
 
+        app.get('/UpdateUser/:email', async (req, res) => {
+            const email = req.params.email
+            const query = { email: email }
+            const result = await userCollection.findOne(query)
+            res.send(result)
+        })
+
         app.post('/users', async (req, res) => {
             const user = req.body
             const query = { email: user.email }
@@ -43,6 +50,22 @@ async function run() {
             const result = await userCollection.insertOne(user);
             res.send(result)
         })
+
+        app.patch("/updatedUser/:email", async (req, res) => {
+            const email = req.params.email;
+            console.log(email, 'email');
+            const body = req.body;
+            const filter = { email: email };
+            const updateDoc = {
+                $set: {
+                    name: body.name,
+                    image: body.image,
+                    email: body.email,
+                },
+            };
+            const result = await userCollection.updateOne(filter, updateDoc);
+            res.send(result);
+        });
 
 
         app.get('/colleges', async (req, res) => {
@@ -57,10 +80,14 @@ async function run() {
             res.send(result)
         })
 
-        app.get('/my_admissions', async (req, res) => {
-            const result = await admissionsCollection.find().toArray()
-            res.send(result)
+
+        app.get('/my_admissions/:email', async (req, res) => {
+            const email = req.params.email
+            const query = { StudentEmail: email }
+            const result = await admissionsCollection.find(query).toArray();
+            res.send(result);
         })
+
 
 
         await client.db("admin").command({ ping: 1 });
