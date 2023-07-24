@@ -73,7 +73,7 @@ async function run() {
             res.send(result)
         })
 
-        // search by name
+        // search by college name
         app.get("/AllCollege/:text", async (req, res) => {
             const text = req.params.text;
             const result = await collegesCollection
